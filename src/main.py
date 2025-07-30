@@ -1,3 +1,3 @@
-from modules.database import DataManager
-
+from core.database import DataManager
+from core.conn import ConnectionServer
 #...
