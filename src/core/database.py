@@ -65,7 +65,7 @@ class DataManager:
             logging.error(f"Erro: {e}")
             raise
     
-    def get_field(self, filter, arg):
+    def get_feed(self, filter, arg):
         e, p, a, pp = self.load()
         url = f"https://firestore.googleapis.com/v1/projects/{pp}/databases/(default)/documents/feeds/"
         token = self.login(e, p, a)
