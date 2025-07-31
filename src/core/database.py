@@ -148,3 +148,33 @@ class DataManager:
         except requests.exceptions.RequestException as e:
             logging.error(f"Erro: {e}")
             return None
+    
+    def get_feeds(self):
+        all = []
+        e, p, a, pp = self.load()
+        url = f"https://firestore.googleapis.com/v1/projects/{pp}/databases/(default)/documents/feeds/"
+        token = self.login(e, p, a)
+
+        headers = {
+            "Authorization": f"Bearer {token}"
+        }
+        
+        try:
+            res = requests.get(url, headers=headers)
+            res.raise_for_status()
+            docs = res.json().get("documents", [])
+            for doc in docs:
+                fields = doc.get("fields", {})
+                nome = fields.get("nome", {}).get("stringValue", "")
+                url = fields.get("fonte", {}).get("mapValue", {}).get("fields", {}).get("url", {}).get("stringValue", "")
+                all.append({"nome": nome, "url": url})
+            
+            if all:
+                logging.info("Feeds Enviados Para a Aplicação.")
+                return all
+            else:
+                logging.error("Nenhum Feed Na Database")
+                return None
+        except Exception as e:
+            logging.error(f"Erro: {e}")
+            return None

@@ -1,0 +1,27 @@
+#principal {
+    align: center middle;
+}
+
+#centred {
+    width: 25;
+    height: 25;
+    align: center middle;
+}
+
+#label_main {
+    margin-bottom: 1;
+}
+
+#btn_access {
+    width: 100%;
+    align: center middle;
+}
+
+.connected {
+    width: 100%;
+    height: 100%;
+}
+
+.hidden {
+    display: none;
+}
