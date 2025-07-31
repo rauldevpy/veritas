@@ -71,8 +71,8 @@ class DataManager:
         token = self.login(e, p, a)
 
         headers = {
-        "Authorization": f"Bearer {token}"
-    }
+            "Authorization": f"Bearer {token}"
+        }
         
         try:
             res = requests.get(url, headers=headers)
@@ -100,8 +100,50 @@ class DataManager:
                         logging.info(f"Feed Encontrado por url: {url}")
                         return fields
 
-                logging.warning(f"Nenhum resultado encontrado para {filter} = {arg}")
-                return None
+            logging.warning(f"Nenhum resultado encontrado para {filter} = {arg}")
+            return None
+
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Erro: {e}")
+            return None
+
+    def get_selectors(self, filter, arg):
+        e, p, a, pp = self.load()
+        url = f"https://firestore.googleapis.com/v1/projects/{pp}/databases/(default)/documents/feeds/"
+        token = self.login(e, p, a)
+
+        headers = {
+            "Authorization": f"Bearer {token}"
+        }
+        
+        try:
+            res = requests.get(url, headers=headers)
+            res.raise_for_status()
+            docs = res.json().get("documents", [])
+            for doc in docs:
+                fields = doc.get("fields", {})
+
+                if filter == "By_NAME":
+                    nome = fields.get("nome", {}).get("stringValue", "")
+                    if nome == arg:
+                        logging.info(f"Feed Encontrado por nome: {nome}")
+                        return fields["alvos"]["mapValue"]["fields"]
+                    
+                elif filter == "By_TIPO":
+                    tipo = fields.get("tipo", {}).get("stringValue", "")
+                    if tipo == arg:
+                        logging.info(f"Feed Encontrado por tipo: {tipo}")
+                        return fields["alvos"]["mapValue"]["fields"]
+                
+                elif filter == "URL":
+                    fonte = fields.get("fonte", {}).get("mapValue", {}).get("fields", {})
+                    url = fonte.get("url", {}).get("stringValue", "")
+                    if url == arg:
+                        logging.info(f"Feed Encontrado por url: {url}")
+                        return fields["alvos"]["mapValue"]["fields"]
+
+            logging.warning(f"Nenhum resultado encontrado para {filter} = {arg}")
+            return None
 
         except requests.exceptions.RequestException as e:
             logging.error(f"Erro: {e}")
